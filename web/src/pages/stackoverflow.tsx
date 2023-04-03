@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 
 const endpoint =
   "https://api.stackexchange.com/2.3/questions?order=desc&sort=activity&site=stackoverflow";
@@ -24,19 +24,23 @@ const QuestionCard: FC<{ question: Question }> = ({ question }) => (
     <h3 className="text-2xl font-bold">{question.title}</h3>
     <div className="flex gap-4 text-lg">
       {question.tags.map((tag, idx) => {
-        return <span>{tag}</span>;
+        return <span key={idx}>{tag}</span>;
       })}
     </div>
   </Link>
 );
-const Home: NextPage = () => {
+const StackOverflow: NextPage = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(endpoint)
       .then((data) => data.json())
-      .then((actualData) => {
+      .then((actualData: { items: Question[] }) => {
         setQuestions(actualData.items);
+      })
+      .catch((err: Error) => {
+        setError(err.message);
       });
   }, []);
 
@@ -55,6 +59,11 @@ const Home: NextPage = () => {
             <span className="text-[hsl(280,100%,70%)]">Stack Overflow</span>{" "}
             Questions
           </h1>
+          {error && (
+            <h1 className="font-mono text-5xl tracking-tight text-white ">
+              {error}
+            </h1>
+          )}
           {questions.length !== 0 ? (
             <div className="flex w-full flex-col gap-4 sm:grid-cols-2 md:gap-8">
               {questions.map((question, idx) => {
@@ -72,4 +81,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default StackOverflow;
