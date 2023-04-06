@@ -22,7 +22,7 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "www.gravatar.com",
+        hostname: "*",
       },
     ],
   },
